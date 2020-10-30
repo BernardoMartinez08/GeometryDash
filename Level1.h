@@ -41,6 +41,7 @@ public:
     void keyPressedPlayer(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 
     cocos2d::Label* labelPause;
+    cocos2d::Sprite* SpritePlayer;
     
     // implement the "static create()" method manually
     CREATE_FUNC(Level1);

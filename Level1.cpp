@@ -44,7 +44,7 @@ bool Level1::init()
 {
     //////////////////////////////
     // 1. super init first
-    if (!Scene::init())
+    if (!Scene::initWithPhysics())
     {
         return false;
     }
@@ -53,10 +53,10 @@ bool Level1::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
     // add "HelloWorld" splash screen"
-    auto spriteFondo = Sprite::create("Fondos/FondoInicio2.png");
+    auto spriteFondo = Sprite::create("Fondos/Inicio.jpg");
     if (spriteFondo == nullptr)
     {
-        problemLoading("'Fondos/FondoInicio2.png'");
+        problemLoading("'Fondos/Inicio.png'");
     }
     else
     {
@@ -89,9 +89,24 @@ bool Level1::init()
     auto keyboardListener1 = EventListenerKeyboard::create();
     keyboardListener1->onKeyPressed = CC_CALLBACK_2(Level1::keyPressedPlayer, this);
 
+    //Cuadro de movimiento 
+    auto physicsBody = PhysicsBody::createBox(Size(65.0f, 81.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
+    physicsBody->setGravityEnable(false);
+    physicsBody->setVelocity(Vec2(200, 0));
+    physicsBody->setVelocityLimit(500.0f);
+
+
+    //Crear SpritePlayer
+    auto SpritePlayer = Sprite::create("PC_Sprite.png");
+    SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
+    addChild(SpritePlayer);
+
+    //Aplicar physicsBody al sprite
+    SpritePlayer->addComponent(physicsBody);
+
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboardListener1, SpritePlayer);
 
-    schedule(CC_SCHEDULE_SELECTOR(Level1::movimientoPlayer));
+    /*schedule(CC_SCHEDULE_SELECTOR(Level1::movimientoPlayer));*/
 
     return true;
 }
