@@ -22,12 +22,12 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __Level1_H__
+#define __Level1_H__
 
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Scene
+class Level1 : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
@@ -36,9 +36,14 @@ public:
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
+    void movimientoPlayer(float);
+
+    void keyPressedPlayer(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+
+    cocos2d::Label* labelPause;
     
     // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(Level1);
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif //

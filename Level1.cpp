@@ -118,7 +118,6 @@ void Level1::keyPressedPlayer(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
 
 }
 
-
 void Level1::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
