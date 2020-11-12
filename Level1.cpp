@@ -24,7 +24,13 @@
 
 #include "Level1.h"
 #include "HelloWorldScene.h"
+#include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+#include "string"
 
+using namespace std;
 USING_NS_CC;
 
 Scene* Level1::createScene()
@@ -97,7 +103,7 @@ bool Level1::init()
 
 
     //Crear SpritePlayer
-    auto SpritePlayer = Sprite::create("PC_Sprite.png");
+    SpritePlayer = Sprite::create("PC_Sprite.png");
     SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
     addChild(SpritePlayer);
 
@@ -111,7 +117,7 @@ bool Level1::init()
     return true;
 }
 
-void Level1::keyPressedPlayer(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
+void Level1::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 {
     Vec2 loc = event->getCurrentTarget()->getPosition();
 
@@ -128,6 +134,11 @@ void Level1::keyPressedPlayer(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     case EventKeyboard::KeyCode::KEY_R:
         labelPause->setVisible(false);
         this->resume();
+        break;
+
+    case EventKeyboard::KeyCode::KEY_ESCAPE:
+        guardarPuntos();
+        Director::getInstance()->replaceScene(TransitionFadeBL::create(1, HelloWorld::createScene()));
         break;
     }
 
@@ -146,4 +157,73 @@ void Level1::movimientoPlayer(float dt) {
     Vec2 loc = SpritePlayer->getPosition();
     SpritePlayer->setPosition(loc.x + 0.4, loc.y);
 }
+
+void Level1::updateScore() {
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+    string puntos;
+    puntos = "SCORE: " + std::to_string(puntosLevel);
+
+    labelScore = Label::createWithTTF(puntos, "fonts/Demoness.otf", 10);
+    if (labelScore == nullptr)
+    {
+        problemLoading("'fonts/Demoness.otf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+        labelScore->setPosition(Vec2((origin.x + visibleSize.width / 2) - 90,
+            (origin.y + visibleSize.height - labelScore->getContentSize().height)));
+
+        // add the label as a child to this layer
+        this->addChild(labelScore, 1);
+    }
+}
     
+void Level1::guardarPuntos() {
+    ofstream file;
+    file.open("C:\Repositorio\ProyectoGeometryDash\Resources /Puntajes.txt", ios::app);
+    file.seekp(0, ios::end);
+    file << "PLAYER HIZO UN NUEVO RECORD DE: " << puntosLevel << "\n";
+    file.close();
+}
+
+void Level1::GANASTE() {
+    auto director = Director::getInstance();
+    auto tamano = director->getWinSize();
+
+    auto labelGanador = Label::createWithTTF("PASASTE TODOS LOS NIVELES", "fonts/Demoness.otf", 13);
+    if (labelGanador == nullptr)
+    {
+        problemLoading("'fonts/Demoness.otf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+        labelGanador->setPosition(tamano.width / 2, tamano.height * 0.50);
+
+        // add the label as a child to this layer
+        this->addChild(labelGanador, 1);
+        labelGanador->setVisible(true);
+    }
+
+    auto labelSalir = Label::createWithTTF("Presioan  [ESC]  para salir", "fonts/arial.ttf", 7);
+    if (labelSalir == nullptr)
+    {
+        problemLoading("'fonts/arial.ttf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+        labelSalir->setPosition(tamano.width / 2, tamano.height * 0.45);
+
+        // add the label as a child to this layer
+        this->addChild(labelSalir, 1);
+        labelSalir->setVisible(true);
+    }
+
+    auto keyboardListener2 = EventListenerKeyboard::create();
+    keyboardListener2->onKeyPressed = CC_CALLBACK_2(Level1::keyPressed, this);
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboardListener2, labelSalir);
+}

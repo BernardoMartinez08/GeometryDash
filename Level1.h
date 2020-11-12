@@ -37,11 +37,16 @@ public:
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
     void movimientoPlayer(float);
-
-    void keyPressedPlayer(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+    void updateScore();
+    void guardarPuntos();
+    void GANASTE();
+    void keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 
     cocos2d::Label* labelPause;
+    cocos2d::Label* labelScore;
     cocos2d::Sprite* SpritePlayer;
+
+    int puntosLevel;
     
     // implement the "static create()" method manually
     CREATE_FUNC(Level1);

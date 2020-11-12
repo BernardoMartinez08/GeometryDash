@@ -84,7 +84,7 @@ bool HelloWorld::init()
     auto PlayItem = MenuItemImage::create(
                                             "Botones/PlayBT2.png",
                                             "Botones/PlayBT2.png",
-                                            CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+                                            CC_CALLBACK_1(HelloWorld::Level1Callback, this));
 
     if (PlayItem == nullptr ||
         PlayItem->getContentSize().width <= 0 ||
@@ -170,9 +170,9 @@ bool HelloWorld::init()
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
-    /*Director::getInstance()->end();*/
+    Director::getInstance()->end();
 
-    Director::getInstance()->replaceScene(TransitionFlipX::create(1, Level1::createScene()));
+    //Director::getInstance()->replaceScene(TransitionFlipX::create(1, OptionsLayer::createScene()));
 
 
     /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
@@ -181,4 +181,9 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
     //_eventDispatcher->dispatchEvent(&customEndEvent);
 
 
+}
+
+void HelloWorld::Level1Callback(Ref* pSender)
+{
+    Director::getInstance()->replaceScene(TransitionFlipX::create(1, Level1::createScene()));
 }
