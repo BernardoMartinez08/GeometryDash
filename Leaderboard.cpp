@@ -111,7 +111,7 @@ bool Leaderboard::init()
 void Leaderboard::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
+    Director::getInstance()->replaceScene(TransitionFlipX::create(1, HelloWorld::createScene()));
 
 }
 
