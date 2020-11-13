@@ -22,12 +22,12 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __Leaderboard_H__
+#define __Leaderboard_H__
 
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Scene
+class Leaderboard : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
@@ -36,12 +36,10 @@ public:
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
-    void Level1Callback(cocos2d::Ref* pSender);
-    void LeaderBoardCallback(cocos2d::Ref* pSender);
-
-
+    void UltimasJugadas();
+    
     // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(Leaderboard);
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif // __Leaderboard_H__

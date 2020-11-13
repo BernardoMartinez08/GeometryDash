@@ -93,7 +93,7 @@ bool Level1::init()
 
 
     auto keyboardListener1 = EventListenerKeyboard::create();
-    keyboardListener1->onKeyPressed = CC_CALLBACK_2(Level1::keyPressedPlayer, this);
+    keyboardListener1->onKeyPressed = CC_CALLBACK_2(Level1::keyPressed, this);
 
     //Cuadro de movimiento 
     auto physicsBody = PhysicsBody::createBox(Size(65.0f, 81.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
@@ -185,7 +185,7 @@ void Level1::guardarPuntos() {
     ofstream file;
     file.open("C:\Repositorio\ProyectoGeometryDash\Resources /Puntajes.txt", ios::app);
     file.seekp(0, ios::end);
-    file << "PLAYER HIZO UN NUEVO RECORD DE: " << puntosLevel << "\n";
+    file << "TU NUEVO PORCENTAJE DEL NIVEL ES: " << puntosLevel << "%\n";
     file.close();
 }
 

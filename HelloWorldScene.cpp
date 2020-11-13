@@ -24,6 +24,7 @@
 
 #include "HelloWorldScene.h"
 #include "Level1.h"
+#include "Leaderboard.h"
 
 USING_NS_CC;
 
@@ -128,6 +129,30 @@ bool HelloWorld::init()
     menuInfo->setPosition(Vec2::ZERO);
     this->addChild(menuInfo, 1);
 
+    //Boton de Leaderboard
+    auto LeaderItem = MenuItemImage::create(
+                                            "Botones/Leaderboard.png",
+                                            "Botones/LeaderboardSelected.png",
+                                            CC_CALLBACK_1(HelloWorld::LeaderBoardCallback, this));
+
+    if (LeaderItem == nullptr ||
+        LeaderItem->getContentSize().width <= 0 ||
+        LeaderItem->getContentSize().height <= 0)
+    {
+        problemLoading("'Botones/Leaderboard.png' and 'Botones/LeaderboardSelected.png'");
+    }
+    else
+    {
+        float x = origin.x - 430 + visibleSize.width - LeaderItem->getContentSize().width / 2;
+        float y = origin.y + 210 + LeaderItem->getContentSize().height / 2;
+        LeaderItem->setPosition(Vec2(x, y));
+    }
+
+    // create menu, it's an autorelease object
+    auto menuLeader = Menu::create(LeaderItem, NULL);
+    menuLeader->setPosition(Vec2::ZERO);
+    this->addChild(menuLeader, 1);
+
     /////////////////////////////
     // 3. add your codes below...
 
@@ -169,21 +194,15 @@ bool HelloWorld::init()
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
-
-    //Director::getInstance()->replaceScene(TransitionFlipX::create(1, OptionsLayer::createScene()));
-
-
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
-
-
 }
 
 void HelloWorld::Level1Callback(Ref* pSender)
 {
     Director::getInstance()->replaceScene(TransitionFlipX::create(1, Level1::createScene()));
+}
+
+void HelloWorld::LeaderBoardCallback(Ref* pSender)
+{
+    Director::getInstance()->replaceScene(TransitionFlipX::create(1, Leaderboard::createScene()));
 }
