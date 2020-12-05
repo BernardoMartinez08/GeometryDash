@@ -1,18 +1,18 @@
 /****************************************************************************
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
+
  http://www.cocos2d-x.org
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,9 +29,21 @@
 #include <stdlib.h>
 #include <time.h>
 #include "string"
+#include "C:\Users\hecto\Desktop\Intento\cocos2d\cocos\editor-support\cocostudio\SimpleAudioEngine.h"  
 
 using namespace std;
 USING_NS_CC;
+
+Camera* camara;
+int i = 0;
+bool jump = false,pausa=false,fall=false;
+auto tamano=cocos2d::Size(0.0,0.0);
+//Rect playerColision;
+//Cajas de las puas
+Rect puas,pua2,pua3;
+//Cajas de las plataformas
+Rect suelo,suelo2;
+PhysicsBody* physicsPlayer;
 
 Scene* Level1::createScene()
 {
@@ -50,10 +62,24 @@ bool Level1::init()
 {
     //////////////////////////////
     // 1. super init first
+    //Soundtrack
+    auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+    audio->preloadBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
+    audio->playBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
     if (!Scene::initWithPhysics())
     {
         return false;
     }
+    //camara
+    camara = Camera::create();
+    camara->setCameraFlag(CameraFlag::DEFAULT);
+    camara->setAnchorPoint(Vec2::ANCHOR_BOTTOM_LEFT);
+    //camara->setContentSize(cocos2d::Size(800,500));
+    this->addChild(camara);
+    camara->setPosition(Vec2(0, 0));
+
+    //CCFOllow
+    
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -74,7 +100,7 @@ bool Level1::init()
     }
 
     auto director = Director::getInstance();
-    auto tamano = director->getWinSize();
+    tamano = director->getWinSize();
 
     labelPause = Label::createWithTTF("GAME PAUSED", "fonts/Demoness.otf", 15);
     if (labelPause == nullptr)
@@ -96,25 +122,67 @@ bool Level1::init()
     keyboardListener1->onKeyPressed = CC_CALLBACK_2(Level1::keyPressed, this);
 
     //Cuadro de movimiento 
-    auto physicsBody = PhysicsBody::createBox(Size(65.0f, 81.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
-    physicsBody->setGravityEnable(false);
-    physicsBody->setVelocity(Vec2(200, 0));
-    physicsBody->setVelocityLimit(500.0f);
+    physicsPlayer = PhysicsBody::createBox(Size(65.0f, 81.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
+    physicsPlayer->setGravityEnable(false);
+    physicsPlayer->setVelocity(Vec2(200, 0));
+    physicsPlayer->setVelocityLimit(500.0f);
 
 
     //Crear SpritePlayer
-    SpritePlayer = Sprite::create("PC_Sprite.png");
+    SpritePlayer = Sprite::create("C:/Users/hecto/source/repos/G/proj.win32/Fondos/Player1.png");
     SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
+    SpritePlayer->setScale(0.25, 0.25);
     addChild(SpritePlayer);
-
+    //Colisiones del player
+    //playerColision=SpritePlayer->getBoundingBox();
+    //Sprites y colisiones de obstaculos y plataformas
+    initObstaculos();
     //Aplicar physicsBody al sprite
-    SpritePlayer->addComponent(physicsBody);
+    SpritePlayer->addComponent(physicsPlayer);
 
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboardListener1, SpritePlayer);
 
-    /*schedule(CC_SCHEDULE_SELECTOR(Level1::movimientoPlayer));*/
-
+   schedule(CC_SCHEDULE_SELECTOR(Level1::movimientoCamara));
+   schedule(CC_SCHEDULE_SELECTOR(Level1::saltar));
+   schedule(CC_SCHEDULE_SELECTOR(Level1::colision));
+   schedule(CC_SCHEDULE_SELECTOR(Level1::gravedad));
     return true;
+}
+
+void Level1::initObstaculos() {
+    
+ //Puas
+//puas
+    auto spritePuas = Sprite::create("spike.png");
+    spritePuas->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
+    spritePuas->setPosition(tamano.width+700,(tamano.height*0.20)-20);
+    spritePuas->setScale(0.5, 0.5);
+    puas = spritePuas->getBoundingBox();
+    addChild(spritePuas);
+ //pua2
+    auto SpritePua2 = Sprite::create("spike.png");
+    SpritePua2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
+    SpritePua2->setPosition(tamano.width + 850, (tamano.height * 0.20));
+    SpritePua2->setScale(0.5, 0.5);
+    pua2 = SpritePua2->getBoundingBox();
+    addChild(SpritePua2);
+    //pua3
+    
+    //Plataformas
+    auto spriteSuelo = Sprite::create("C:/Users/hecto/source/repos/G/proj.win32/bloque.png");
+    spriteSuelo->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
+    spriteSuelo->setPosition(tamano.width + 700, (tamano.height * 0.2)-20);
+    spriteSuelo->setScale(0.4, 0.4);
+    suelo = spriteSuelo->getBoundingBox();
+    addChild(spriteSuelo);
+    //suelo2
+    auto spriteSuelo2=Sprite::create("C:/Users/hecto/source/repos/G/proj.win32/bloque.png");
+    spriteSuelo2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
+    spriteSuelo2->setPosition(SpritePua2->getPosition());
+    spriteSuelo2->setScale(0.4, 0.4);
+    suelo2 = spriteSuelo2->getBoundingBox();
+    addChild(spriteSuelo2);
+
 }
 
 void Level1::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
@@ -123,12 +191,22 @@ void Level1::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
 
     switch (keyCode) {
     case EventKeyboard::KeyCode::KEY_SPACE:
-        
+        jump = true;
         break;
 
     case EventKeyboard::KeyCode::KEY_P:
+        pausa = !pausa;
+        if (pausa) {
+        CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+        physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));
         labelPause->setVisible(true);
-        this->pause();
+        this->pause();}
+        if (!pausa) {
+            CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+            physicsPlayer->setVelocity(cocos2d::Vec2(200, 0));
+            labelPause->setVisible(false);
+            this->resume();
+        }
         break;
 
     case EventKeyboard::KeyCode::KEY_R:
@@ -154,8 +232,8 @@ void Level1::menuCloseCallback(Ref* pSender)
 
 void Level1::movimientoPlayer(float dt) {
 
-    Vec2 loc = SpritePlayer->getPosition();
-    SpritePlayer->setPosition(loc.x + 0.4, loc.y);
+   /* Vec2 loc = SpritePlayer->getPosition();
+    SpritePlayer->setPosition(loc.x + 0.4, loc.y);*/
 }
 
 void Level1::updateScore() {
@@ -180,7 +258,7 @@ void Level1::updateScore() {
         this->addChild(labelScore, 1);
     }
 }
-    
+
 void Level1::guardarPuntos() {
     ofstream file;
     file.open("C:\Repositorio\ProyectoGeometryDash\Resources /Puntajes.txt", ios::app);
@@ -227,3 +305,94 @@ void Level1::GANASTE() {
     keyboardListener2->onKeyPressed = CC_CALLBACK_2(Level1::keyPressed, this);
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboardListener2, labelSalir);
 }
+
+void Level1::movimientoCamara(float a) {
+    camara->setPosition(SpritePlayer->getPosition().x+150,160);
+}
+
+void Level1::saltar(float h) {
+    if (jump) {
+        fall = false;
+        i++;
+        SpritePlayer->setRotation(SpritePlayer->getRotation() + 2);
+        if (i < 23) {
+            SpritePlayer->setPosition(SpritePlayer->getPosition().x, SpritePlayer->getPosition().y + 3);
+        }
+       else {
+       //     SpritePlayer->setPosition(SpritePlayer->getPosition().x, SpritePlayer->getPosition().y - 3);
+            fall = true;
+        }
+       
+
+    } 
+    
+    if (i >= 45) {
+        //SpritePlayer->setPosition(SpritePlayer->getPosition().x, tamano.height * 0.20);
+        jump = false;//fall = true;
+        i = 0;
+    }
+}
+
+void Level1::colision(float noImporta) {
+    //playerColision = SpritePlayer->getBoundingBox();
+    if (puas.intersectsCircle(SpritePlayer->getPosition(), 15 )||pua2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
+        morir();
+    }
+
+    if (suelo.intersectsCircle(SpritePlayer->getPosition(),15)) {
+        if (!jump) {
+            SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo.getMaxY() + 15);
+            //jump = false;
+            fall = true;
+        }
+    
+    }
+    if (suelo2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
+        if (!jump) {
+            SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo2.getMaxY() + 15);
+            fall = true;
+        }
+
+    }
+    else {
+       /* if (fall) {
+           // SpritePlayer->setPosition(SpritePlayer->getPosition().x,SpritePlayer->getPosition().y-1.5);
+
+            if (SpritePlayer->getPosition().y <= tamano.height * 0.20) {
+                SpritePlayer->setPosition(SpritePlayer->getPosition().x, tamano.height * 0.2);
+                fall = false;
+            }
+        }*/
+    }
+}
+
+void Level1::gravedad(float h) {
+    if (SpritePlayer->getPositionY() > tamano.height * 0.20&&fall) {
+        physicsPlayer->setVelocity(Vec2(200, -200));
+    }
+    else {
+        physicsPlayer->setVelocity(Vec2(200, 0));
+    }
+}
+
+void Level1::morir() {
+    SpritePlayer->setVisible(false);
+    jump = false;i = 0;
+    fall = false;
+    pausa = true;
+    CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+    //CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("C:/Users/hecto/source/repos/G/Resources/hit.mp3");
+    //cooldown
+    scheduleOnce(CC_SCHEDULE_SELECTOR(Level1::respawn), 2.0f);
+}
+
+void Level1::respawn(float g) {
+    pausa = false;
+    auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+    audio->preloadBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
+    audio->playBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
+    SpritePlayer->setVisible(true);
+    SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
+    SpritePlayer->setRotation(SpritePlayer->getRotation() - SpritePlayer->getRotation());
+}
+
