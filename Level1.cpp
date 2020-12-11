@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "string"
-#include "C:\Users\hecto\Desktop\Intento\cocos2d\cocos\editor-support\cocostudio\SimpleAudioEngine.h"  
+//#include "C:\Users\hecto\Desktop\Intento\cocos2d\cocos\editor-support\cocostudio\SimpleAudioEngine.h"  
 
 using namespace std;
 USING_NS_CC;
@@ -63,9 +63,9 @@ bool Level1::init()
     //////////////////////////////
     // 1. super init first
     //Soundtrack
-    auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-    audio->preloadBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
-    audio->playBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
+    //auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+    //audio->preloadBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
+    //audio->playBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
     if (!Scene::initWithPhysics())
     {
         return false;
@@ -129,9 +129,9 @@ bool Level1::init()
 
 
     //Crear SpritePlayer
-    SpritePlayer = Sprite::create("C:/Users/hecto/source/repos/G/proj.win32/Fondos/Player1.png");
+    SpritePlayer = Sprite::create("Players/Player1.png");
     SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
-    SpritePlayer->setScale(0.25, 0.25);
+    SpritePlayer->setScale(0.55, 0.55);
     addChild(SpritePlayer);
     //Colisiones del player
     //playerColision=SpritePlayer->getBoundingBox();
@@ -153,14 +153,14 @@ void Level1::initObstaculos() {
     
  //Puas
 //puas
-    auto spritePuas = Sprite::create("spike.png");
+    auto spritePuas = Sprite::create("pua.png");
     spritePuas->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
     spritePuas->setPosition(tamano.width+700,(tamano.height*0.20)-20);
     spritePuas->setScale(0.5, 0.5);
     puas = spritePuas->getBoundingBox();
     addChild(spritePuas);
  //pua2
-    auto SpritePua2 = Sprite::create("spike.png");
+    auto SpritePua2 = Sprite::create("pua.png");
     SpritePua2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
     SpritePua2->setPosition(tamano.width + 850, (tamano.height * 0.20));
     SpritePua2->setScale(0.5, 0.5);
@@ -169,14 +169,14 @@ void Level1::initObstaculos() {
     //pua3
     
     //Plataformas
-    auto spriteSuelo = Sprite::create("C:/Users/hecto/source/repos/G/proj.win32/bloque.png");
+    auto spriteSuelo = Sprite::create("C:/Repositorio/ProyectoGeometryDash/Resources/bloque.png");
     spriteSuelo->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
     spriteSuelo->setPosition(tamano.width + 700, (tamano.height * 0.2)-20);
     spriteSuelo->setScale(0.4, 0.4);
     suelo = spriteSuelo->getBoundingBox();
     addChild(spriteSuelo);
     //suelo2
-    auto spriteSuelo2=Sprite::create("C:/Users/hecto/source/repos/G/proj.win32/bloque.png");
+    auto spriteSuelo2=Sprite::create("C:/Repositorio/ProyectoGeometryDash/Resources/bloque.png");
     spriteSuelo2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
     spriteSuelo2->setPosition(SpritePua2->getPosition());
     spriteSuelo2->setScale(0.4, 0.4);
@@ -197,14 +197,19 @@ void Level1::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
     case EventKeyboard::KeyCode::KEY_P:
         pausa = !pausa;
         if (pausa) {
-        CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+        //CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
         physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));
         labelPause->setVisible(true);
+        pauseScreen();
         this->pause();}
         if (!pausa) {
-            CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+            //CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
             physicsPlayer->setVelocity(cocos2d::Vec2(200, 0));
             labelPause->setVisible(false);
+            botonPlayer1->removeFromParentAndCleanup(true);
+            botonPlayer2->removeFromParentAndCleanup(true);
+            botonPlayer3->removeFromParentAndCleanup(true);
+            labelPersonaje->setVisible(false);
             this->resume();
         }
         break;
@@ -261,7 +266,7 @@ void Level1::updateScore() {
 
 void Level1::guardarPuntos() {
     ofstream file;
-    file.open("C:\Repositorio\ProyectoGeometryDash\Resources /Puntajes.txt", ios::app);
+    file.open("C:/Repositorio/ProyectoGeometryDash/Resources/Puntajes.txt", ios::app);
     file.seekp(0, ios::end);
     file << "TU NUEVO PORCENTAJE DEL NIVEL ES: " << puntosLevel << "%\n";
     file.close();
@@ -380,7 +385,7 @@ void Level1::morir() {
     jump = false;i = 0;
     fall = false;
     pausa = true;
-    CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+    //CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
     //CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("C:/Users/hecto/source/repos/G/Resources/hit.mp3");
     //cooldown
     scheduleOnce(CC_SCHEDULE_SELECTOR(Level1::respawn), 2.0f);
@@ -388,11 +393,129 @@ void Level1::morir() {
 
 void Level1::respawn(float g) {
     pausa = false;
-    auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-    audio->preloadBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
-    audio->playBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
+    //auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+    //audio->preloadBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
+   // audio->playBackgroundMusic("C:/Users/hecto/source/repos/G/Resources/Crystals.mp3");
     SpritePlayer->setVisible(true);
     SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
     SpritePlayer->setRotation(SpritePlayer->getRotation() - SpritePlayer->getRotation());
+}
+
+void Level1::pauseScreen() {
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+    auto Player1 = MenuItemImage::create(
+                                            "Players/Player1.png",
+                                            "Players/Player1.png",
+                                            CC_CALLBACK_1(Level1::cambiarPlayer1, this));
+
+    if (Player1 == nullptr ||
+        Player1->getContentSize().width <= 0 ||
+        Player1->getContentSize().height <= 0)
+    {
+        problemLoading("'Players/Player1.png' and 'Players/Player1.png'");
+    }
+    else
+    {
+        float x = (origin.x + visibleSize.width - Player1->getContentSize().width / 2)-100;
+        float y = origin.y + 60 + Player1->getContentSize().height / 2;
+        Player1->setPosition(Vec2(x, y));
+    }
+
+    // create menu, it's an autorelease object
+    botonPlayer1 = Menu::create(Player1, NULL);
+    botonPlayer1->setPosition(Vec2::ZERO);
+    this->addChild(botonPlayer1, 3);
+
+    auto Player2 = MenuItemImage::create(
+                                        "Players/Player2.png",
+                                        "Players/Player2.png",
+                                        CC_CALLBACK_1(Level1::cambiarPlayer2, this));
+
+    if (Player2 == nullptr ||
+        Player2->getContentSize().width <= 0 ||
+        Player2->getContentSize().height <= 0)
+    {
+        problemLoading("'Players/Player2.png' and 'Players/Player2.png'");
+    }
+    else
+    {
+        float x = origin.x + visibleSize.width - Player2->getContentSize().width / 2;
+        float y = origin.y + 60 + Player2->getContentSize().height / 2;
+        Player2->setPosition(Vec2(x, y));
+    }
+
+    // create menu, it's an autorelease object
+    botonPlayer2 = Menu::create(Player2, NULL);
+    botonPlayer2->setPosition(Vec2::ZERO);
+    this->addChild(botonPlayer2, 3);
+
+
+    auto Player3 = MenuItemImage::create(
+                                        "Players/Player3.png",
+                                        "Players/Player3.png",
+                                        CC_CALLBACK_1(Level1::cambiarPlayer3, this));
+
+    if (Player3 == nullptr ||
+        Player3->getContentSize().width <= 0 ||
+        Player3->getContentSize().height <= 0)
+    {
+        problemLoading("'Players/Player3.png' and 'Players/Player3.png'");
+    }
+    else
+    {
+        float x = (origin.x + visibleSize.width - Player3->getContentSize().width / 2) + 100;
+        float y = origin.y + 60 + Player3->getContentSize().height / 2;
+        Player3->setPosition(Vec2(x, y));
+    }
+
+    // create menu, it's an autorelease object
+    botonPlayer3 = Menu::create(Player3, NULL);
+    botonPlayer3->setPosition(Vec2::ZERO);
+    this->addChild(botonPlayer3, 3);
+
+    labelPersonaje = Label::createWithTTF("CAMBIA TU SKIN", "fonts/Demoness.otf", 15);
+    if (labelPersonaje == nullptr)
+    {
+        problemLoading("'fonts/Demoness.otf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+
+        labelPersonaje->setPosition(tamano.width / 2, (tamano.height * 0.50)-80);
+
+        // add the label as a child to this layer
+        this->addChild(labelPersonaje, 2);
+        labelPersonaje->setVisible(true);
+    }
+}
+
+void Level1::cambiarPlayer1(Ref* pSender)
+{
+    auto nuevoPlayer = Sprite::create("Players/Player1.png");
+    nuevoPlayer->setPosition(SpritePlayer->getPosition());
+    nuevoPlayer->setScale(0.25, 0.25);
+
+    SpritePlayer = nuevoPlayer;
+}
+
+void Level1::cambiarPlayer2(Ref* pSender)
+{
+    auto nuevoPlayer2 = Sprite::create("Players/Player2.png");
+    nuevoPlayer2->setPosition(SpritePlayer->getPosition());
+    nuevoPlayer2->setScale(0.25, 0.25);
+
+    SpritePlayer = nuevoPlayer2;
+}
+
+void Level1::cambiarPlayer3(Ref* pSender)
+{
+    auto nuevoPlayer3 = Sprite::create("Players/Player3.png");
+    nuevoPlayer3->setPosition(SpritePlayer->getPosition());
+    nuevoPlayer3->setScale(0.25, 0.25);
+
+    SpritePlayer = nuevoPlayer3;
 }
 
