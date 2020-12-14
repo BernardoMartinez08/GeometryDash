@@ -51,24 +51,14 @@ public:
     void respawn(float);
     void gravedad(float);
     void initObstaculos();
-    void pauseScreen();
 
     string spriteFile;
     cocos2d::Label* labelPause;
-    cocos2d::Label* labelPersonaje;
     cocos2d::Label* labelScore;
     cocos2d::Sprite* SpritePlayer;
 
-    cocos2d::Menu* botonPlayer1;
-    cocos2d::Menu* botonPlayer2;
-    cocos2d::Menu* botonPlayer3;
 
     int puntosLevel;
-
-    void cambiarPlayer1(cocos2d::Ref* pSender);
-    void cambiarPlayer2(cocos2d::Ref* pSender);
-    void cambiarPlayer3(cocos2d::Ref* pSender);
-
     // implement the "static create()" method manually
     CREATE_FUNC(Level1);
 private:

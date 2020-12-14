@@ -24,6 +24,7 @@
 
 #include "Level1.h"
 #include "HelloWorldScene.h"
+#include "CambioSkin.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -129,7 +130,14 @@ bool Level1::init()
 
 
     //Crear SpritePlayer
-    SpritePlayer = Sprite::create("Players/Player1.png");
+    CambioSkin Cambio;
+    std::string skin = "";
+    skin = Cambio.getSprite();
+
+    if(skin == "")
+        skin = "Players/Player1.png";
+
+    SpritePlayer = Sprite::create(skin);
     SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
     SpritePlayer->setScale(0.55, 0.55);
     addChild(SpritePlayer);
@@ -200,16 +208,13 @@ void Level1::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
         //CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
         physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));
         labelPause->setVisible(true);
-        pauseScreen();
+
         this->pause();}
         if (!pausa) {
             //CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
             physicsPlayer->setVelocity(cocos2d::Vec2(200, 0));
             labelPause->setVisible(false);
-            botonPlayer1->removeFromParentAndCleanup(true);
-            botonPlayer2->removeFromParentAndCleanup(true);
-            botonPlayer3->removeFromParentAndCleanup(true);
-            labelPersonaje->setVisible(false);
+           
             this->resume();
         }
         break;
@@ -399,123 +404,5 @@ void Level1::respawn(float g) {
     SpritePlayer->setVisible(true);
     SpritePlayer->setPosition(tamano.width / 6, tamano.height * 0.20);
     SpritePlayer->setRotation(SpritePlayer->getRotation() - SpritePlayer->getRotation());
-}
-
-void Level1::pauseScreen() {
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-    auto Player1 = MenuItemImage::create(
-                                            "Players/Player1.png",
-                                            "Players/Player1.png",
-                                            CC_CALLBACK_1(Level1::cambiarPlayer1, this));
-
-    if (Player1 == nullptr ||
-        Player1->getContentSize().width <= 0 ||
-        Player1->getContentSize().height <= 0)
-    {
-        problemLoading("'Players/Player1.png' and 'Players/Player1.png'");
-    }
-    else
-    {
-        float x = (origin.x + visibleSize.width - Player1->getContentSize().width / 2)-100;
-        float y = origin.y + 60 + Player1->getContentSize().height / 2;
-        Player1->setPosition(Vec2(x, y));
-    }
-
-    // create menu, it's an autorelease object
-    botonPlayer1 = Menu::create(Player1, NULL);
-    botonPlayer1->setPosition(Vec2::ZERO);
-    this->addChild(botonPlayer1, 3);
-
-    auto Player2 = MenuItemImage::create(
-                                        "Players/Player2.png",
-                                        "Players/Player2.png",
-                                        CC_CALLBACK_1(Level1::cambiarPlayer2, this));
-
-    if (Player2 == nullptr ||
-        Player2->getContentSize().width <= 0 ||
-        Player2->getContentSize().height <= 0)
-    {
-        problemLoading("'Players/Player2.png' and 'Players/Player2.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - Player2->getContentSize().width / 2;
-        float y = origin.y + 60 + Player2->getContentSize().height / 2;
-        Player2->setPosition(Vec2(x, y));
-    }
-
-    // create menu, it's an autorelease object
-    botonPlayer2 = Menu::create(Player2, NULL);
-    botonPlayer2->setPosition(Vec2::ZERO);
-    this->addChild(botonPlayer2, 3);
-
-
-    auto Player3 = MenuItemImage::create(
-                                        "Players/Player3.png",
-                                        "Players/Player3.png",
-                                        CC_CALLBACK_1(Level1::cambiarPlayer3, this));
-
-    if (Player3 == nullptr ||
-        Player3->getContentSize().width <= 0 ||
-        Player3->getContentSize().height <= 0)
-    {
-        problemLoading("'Players/Player3.png' and 'Players/Player3.png'");
-    }
-    else
-    {
-        float x = (origin.x + visibleSize.width - Player3->getContentSize().width / 2) + 100;
-        float y = origin.y + 60 + Player3->getContentSize().height / 2;
-        Player3->setPosition(Vec2(x, y));
-    }
-
-    // create menu, it's an autorelease object
-    botonPlayer3 = Menu::create(Player3, NULL);
-    botonPlayer3->setPosition(Vec2::ZERO);
-    this->addChild(botonPlayer3, 3);
-
-    labelPersonaje = Label::createWithTTF("CAMBIA TU SKIN", "fonts/Demoness.otf", 15);
-    if (labelPersonaje == nullptr)
-    {
-        problemLoading("'fonts/Demoness.otf'");
-    }
-    else
-    {
-        // position the label on the center of the screen
-
-        labelPersonaje->setPosition(tamano.width / 2, (tamano.height * 0.50)-80);
-
-        // add the label as a child to this layer
-        this->addChild(labelPersonaje, 2);
-        labelPersonaje->setVisible(true);
-    }
-}
-
-void Level1::cambiarPlayer1(Ref* pSender)
-{
-    auto nuevoPlayer = Sprite::create("Players/Player1.png");
-    nuevoPlayer->setPosition(SpritePlayer->getPosition());
-    nuevoPlayer->setScale(0.25, 0.25);
-
-    SpritePlayer = nuevoPlayer;
-}
-
-void Level1::cambiarPlayer2(Ref* pSender)
-{
-    auto nuevoPlayer2 = Sprite::create("Players/Player2.png");
-    nuevoPlayer2->setPosition(SpritePlayer->getPosition());
-    nuevoPlayer2->setScale(0.25, 0.25);
-
-    SpritePlayer = nuevoPlayer2;
-}
-
-void Level1::cambiarPlayer3(Ref* pSender)
-{
-    auto nuevoPlayer3 = Sprite::create("Players/Player3.png");
-    nuevoPlayer3->setPosition(SpritePlayer->getPosition());
-    nuevoPlayer3->setScale(0.25, 0.25);
-
-    SpritePlayer = nuevoPlayer3;
 }
 

@@ -22,12 +22,12 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __CAMBIO_SKIN_H__
+#define __CAMBIO_SKIN_H__
 
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Scene
+class CambioSkin : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
@@ -36,13 +36,23 @@ public:
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
-    void Level1Callback(cocos2d::Ref* pSender);
-    void LeaderBoardCallback(cocos2d::Ref* pSender);
-    void CambioSkinCallback(cocos2d::Ref* pSender);
+   
+    void pauseScreen();
+    void cambiarPlayer1(cocos2d::Ref* pSender);
+    void cambiarPlayer2(cocos2d::Ref* pSender);
+    void cambiarPlayer3(cocos2d::Ref* pSender);
+    std::string getSprite();
+    void setSprite(std::string);
 
-
+    std::string spriteFile;
+    cocos2d::Label* labelPersonaje;
+    
+    cocos2d::Menu* botonPlayer1;
+    cocos2d::Menu* botonPlayer2;
+    cocos2d::Menu* botonPlayer3;
+    
     // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(CambioSkin);
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif // __CAMBIO_SKIN_H__

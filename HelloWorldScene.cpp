@@ -25,6 +25,7 @@
 #include "HelloWorldScene.h"
 #include "Level1.h"
 #include "Leaderboard.h"
+#include "CambioSkin.h"
 
 USING_NS_CC;
 
@@ -105,29 +106,6 @@ bool HelloWorld::init()
     menuPlay->setPosition(Vec2::ZERO);
     this->addChild(menuPlay, 1);
 
-    //Boton de Informacion
-    auto InfoItem = MenuItemImage::create(
-                                            "Botones/infoBT2.png",
-                                            "Botones/infoBT2.png",
-                                            CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-
-    if (InfoItem == nullptr ||
-        InfoItem->getContentSize().width <= 0 ||
-        InfoItem->getContentSize().height <= 0)
-    {
-        problemLoading("'Botones/infoBT2.png' and 'Botones/infoBT2.png'");
-    }
-    else
-    {
-        float x = origin.x - 440 + visibleSize.width - InfoItem->getContentSize().width / 2;
-        float y = origin.y + InfoItem->getContentSize().height / 2;
-        InfoItem->setPosition(Vec2(x, y));
-    }
-
-    // create menu, it's an autorelease object
-    auto menuInfo = Menu::create(InfoItem, NULL);
-    menuInfo->setPosition(Vec2::ZERO);
-    this->addChild(menuInfo, 1);
 
     //Boton de Leaderboard
     auto LeaderItem = MenuItemImage::create(
@@ -152,6 +130,30 @@ bool HelloWorld::init()
     auto menuLeader = Menu::create(LeaderItem, NULL);
     menuLeader->setPosition(Vec2::ZERO);
     this->addChild(menuLeader, 1);
+
+    //Boton de CambioSkin
+    auto skinItem = MenuItemImage::create(
+        "Botones/CambioSkin.png",
+        "Botones/CambioSkin.png",
+        CC_CALLBACK_1(HelloWorld::CambioSkinCallback, this));
+
+    if (skinItem == nullptr ||
+        skinItem->getContentSize().width <= 0 ||
+        skinItem->getContentSize().height <= 0)
+    {
+        problemLoading("'Botones/CambioSkin.png' and 'Botones/CambioSkin.png'");
+    }
+    else
+    {
+        float x = (origin.x - 440 + visibleSize.width - skinItem->getContentSize().width / 2) + 30;
+        float y = (origin.y + skinItem->getContentSize().height / 2) + 10;
+        skinItem->setPosition(Vec2(x, y));
+    }
+
+    // create menu, it's an autorelease object
+    auto menuSkin = Menu::create(skinItem, NULL);
+    menuSkin->setPosition(Vec2::ZERO);
+    this->addChild(menuSkin, 1);
 
     /////////////////////////////
     // 3. add your codes below...
@@ -188,6 +190,7 @@ bool HelloWorld::init()
         // add the sprite as a child to this layer
         this->addChild(spriteFondo, 0);
     }
+
     return true;
 }
 
@@ -205,4 +208,9 @@ void HelloWorld::Level1Callback(Ref* pSender)
 void HelloWorld::LeaderBoardCallback(Ref* pSender)
 {
     Director::getInstance()->replaceScene(TransitionFlipX::create(1, Leaderboard::createScene()));
+}
+
+void HelloWorld::CambioSkinCallback(Ref* pSender)
+{
+    Director::getInstance()->replaceScene(TransitionFlipX::create(1, CambioSkin::createScene()));
 }
