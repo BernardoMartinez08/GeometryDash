@@ -49,6 +49,8 @@ public:
     void colision(float);
     void morir();
     void respawn(float);
+    void crearPua(int x, int y);
+    void crearBloque(int x, int y);
     void gravedad(float);
     void initObstaculos();
 

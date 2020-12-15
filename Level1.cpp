@@ -30,21 +30,31 @@
 #include <stdlib.h>
 #include <time.h>
 #include "string"
+#include <vector>
+
+
 //#include "C:\Users\hecto\Desktop\Intento\cocos2d\cocos\editor-support\cocostudio\SimpleAudioEngine.h"  
 
 using namespace std;
 USING_NS_CC;
 
+typedef cocos2d::Rect Pua;
+typedef cocos2d::Rect Bloque;
 Camera* camara;
 int i = 0;
 bool jump = false,pausa=false,fall=false;
 auto tamano=cocos2d::Size(0.0,0.0);
 //Rect playerColision;
 //Cajas de las puas
-Rect puas,pua2,pua3;
+//Rect puas,pua2,pua3;
 //Cajas de las plataformas
 Rect suelo,suelo2;
+
+
+
 PhysicsBody* physicsPlayer;
+vector<Pua> puas;
+vector<Bloque> bloques;
 
 Scene* Level1::createScene()
 {
@@ -161,35 +171,35 @@ void Level1::initObstaculos() {
     
  //Puas
 //puas
-    auto spritePuas = Sprite::create("pua.png");
+    crearPua(tamano.width + 700, (tamano.height * 0.20) - 20);
+    /*auto spritePuas = Sprite::create("pua.png");
     spritePuas->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
     spritePuas->setPosition(tamano.width+700,(tamano.height*0.20)-20);
     spritePuas->setScale(0.5, 0.5);
     puas = spritePuas->getBoundingBox();
-    addChild(spritePuas);
+    addChild(spritePuas);*/
  //pua2
-    auto SpritePua2 = Sprite::create("pua.png");
-    SpritePua2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
-    SpritePua2->setPosition(tamano.width + 850, (tamano.height * 0.20));
-    SpritePua2->setScale(0.5, 0.5);
-    pua2 = SpritePua2->getBoundingBox();
-    addChild(SpritePua2);
+    crearPua(tamano.width + 850, (tamano.height * 0.20));
+    //auto SpritePua2 = Sprite::create("pua.png");
+    //SpritePua2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
+    //SpritePua2->setPosition;
+    //SpritePua2->setScale(0.5, 0.5);
+    //pua2 = SpritePua2->getBoundingBox();
+    //addChild(SpritePua2);
     //pua3
     
     //Plataformas
-    auto spriteSuelo = Sprite::create("C:/Repositorio/ProyectoGeometryDash/Resources/bloque.png");
-    spriteSuelo->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
-    spriteSuelo->setPosition(tamano.width + 700, (tamano.height * 0.2)-20);
-    spriteSuelo->setScale(0.4, 0.4);
-    suelo = spriteSuelo->getBoundingBox();
-    addChild(spriteSuelo);
+    //Suelo 1
+    crearBloque(tamano.width + 700, (tamano.height * 0.2) - 20);
+    
     //suelo2
-    auto spriteSuelo2=Sprite::create("C:/Repositorio/ProyectoGeometryDash/Resources/bloque.png");
+    crearBloque(puas[1].getMaxX(), puas[1].getMinY());
+ /*   auto spriteSuelo2=Sprite::create("C:/Repositorio/ProyectoGeometryDash/Resources/bloque.png");
     spriteSuelo2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
     spriteSuelo2->setPosition(SpritePua2->getPosition());
     spriteSuelo2->setScale(0.4, 0.4);
     suelo2 = spriteSuelo2->getBoundingBox();
-    addChild(spriteSuelo2);
+    addChild(spriteSuelo2);*/
 
 }
 
@@ -345,35 +355,56 @@ void Level1::saltar(float h) {
 
 void Level1::colision(float noImporta) {
     //playerColision = SpritePlayer->getBoundingBox();
-    if (puas.intersectsCircle(SpritePlayer->getPosition(), 15 )||pua2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
+   /* if (puas.intersectsCircle(SpritePlayer->getPosition(), 15 )||pua2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
         morir();
-    }
-
-    if (suelo.intersectsCircle(SpritePlayer->getPosition(),15)) {
-        if (!jump) {
-            SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo.getMaxY() + 15);
-            //jump = false;
-            fall = true;
+    }*/
+    for (int i = 0; i < puas.size(); i++)
+    {
+        if (puas[i].intersectsCircle(SpritePlayer->getPosition(), 15))
+        {
+            morir();
         }
-    
     }
-    if (suelo2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
-        if (!jump) {
-            SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo2.getMaxY() + 15);
-            fall = true;
-        }
 
-    }
-    else {
-       /* if (fall) {
-           // SpritePlayer->setPosition(SpritePlayer->getPosition().x,SpritePlayer->getPosition().y-1.5);
-
-            if (SpritePlayer->getPosition().y <= tamano.height * 0.20) {
-                SpritePlayer->setPosition(SpritePlayer->getPosition().x, tamano.height * 0.2);
-                fall = false;
+    bool entro = false;
+    for (int i = 0; i < bloques.size(); i++)
+    {
+        if (bloques[i].intersectsCircle(SpritePlayer->getPosition(), 15))
+        {
+            if (!jump)
+            {
+                SpritePlayer->setPosition(SpritePlayer->getPosition().x, bloques[i].getMaxY() + 15);
+                //jump = false;
+                fall = true;
+                entro = true;
             }
-        }*/
+        }
     }
+    //if (suelo.intersectsCircle(SpritePlayer->getPosition(),15)) {
+    //    if (!jump) {
+    //        SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo.getMaxY() + 15);
+    //        //jump = false;
+    //        fall = true;
+    //    }
+    //
+    //}
+    //if (suelo2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
+    //    if (!jump) {
+    //        SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo2.getMaxY() + 15);
+    //        fall = true;
+    //    }
+
+    //}
+    //if (entro) {
+    //   /* if (fall) {
+    //       // SpritePlayer->setPosition(SpritePlayer->getPosition().x,SpritePlayer->getPosition().y-1.5);
+
+    //        if (SpritePlayer->getPosition().y <= tamano.height * 0.20) {
+    //            SpritePlayer->setPosition(SpritePlayer->getPosition().x, tamano.height * 0.2);
+    //            fall = false;
+    //        }
+    ////    }*/
+    //}
 }
 
 void Level1::gravedad(float h) {
@@ -406,3 +437,24 @@ void Level1::respawn(float g) {
     SpritePlayer->setRotation(SpritePlayer->getRotation() - SpritePlayer->getRotation());
 }
 
+void Level1::crearPua(int x, int y)
+{
+    auto Sprite = cocos2d::Sprite::create("pua.png");
+    Sprite->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
+    Sprite->setPosition(x, y);
+    Sprite->setScale(0.5, 0.5);
+    Pua pua = Sprite->getBoundingBox();
+    puas.push_back(pua);
+    addChild(Sprite);
+}
+
+void Level1::crearBloque(int x, int y)
+{
+    auto spriteSuelo = Sprite::create("C:/Repositorio/ProyectoGeometryDash/Resources/bloque.png");
+    spriteSuelo->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
+    spriteSuelo->setPosition(x, y);
+    spriteSuelo->setScale(0.4, 0.4);
+    Bloque suelo = spriteSuelo->getBoundingBox();
+    bloques.push_back(suelo);
+    addChild(spriteSuelo);
+}
