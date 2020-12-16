@@ -51,6 +51,7 @@ public:
     void respawn(float);
     void crearPua(int x, int y);
     void crearBloque(int x, int y);
+    void crearMeta(int x, int y);
     void gravedad(float);
     void initObstaculos();
 

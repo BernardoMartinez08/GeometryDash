@@ -40,6 +40,7 @@ USING_NS_CC;
 
 typedef cocos2d::Rect Pua;
 typedef cocos2d::Rect Bloque;
+typedef cocos2d::Rect Meta;
 Camera* camara;
 int i = 0;
 bool jump = false,pausa=false,fall=false;
@@ -50,6 +51,8 @@ auto tamano=cocos2d::Size(0.0,0.0);
 //Cajas de las plataformas
 //Rect suelo,
 //suelo2;
+
+Meta meta;
 vector<Pua> puas;
 vector<Bloque> bloques;
 
@@ -113,7 +116,6 @@ bool Level1::init()
     auto director = Director::getInstance();
     tamano = director->getWinSize();
 
-    
     labelPause = Label::createWithTTF("GAME PAUSED", "fonts/Demoness.otf", 15);
     if (labelPause == nullptr)
     {
@@ -135,8 +137,9 @@ bool Level1::init()
 
     //Cuadro de movimiento 
     physicsPlayer = PhysicsBody::createBox(Size(65.0f, 81.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
- 
-
+    physicsPlayer->setGravityEnable(false);
+    physicsPlayer->setVelocity(Vec2(200, 0));
+    physicsPlayer->setVelocityLimit(500.0f);
 
     //Crear SpritePlayer
     CambioSkin Cambio;
@@ -169,15 +172,18 @@ bool Level1::init()
 void Level1::initObstaculos() {
     
  //Puas
+    int y = tamano.height * 0.20 - 20;
+    crearPua(700, y);
 
-    crearPua(tamano.width + 700, (tamano.height * 0.20) - 20);
+    crearPua(900, y);
 
-    crearPua(tamano.width + 850, (tamano.height * 0.20));
-    
-    crearBloque(tamano.width + 700, (tamano.height * 0.2) - 20);
+    crearPua(1100, y);
+    //
+    //crearBloque(tamano.width + 700, y - 20);
 
-    crearBloque(puas[1].getMaxX(), puas[1].getMinY());
+    //crearBloque(puas[1].getMaxX(), puas[1].getMinY());
 
+    crearMeta(1300, y);
 }
 
 void Level1::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
@@ -192,11 +198,12 @@ void Level1::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
     case EventKeyboard::KeyCode::KEY_P:
         pausa = !pausa;
         if (pausa) {
-        //CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
-        physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));
-        labelPause->setVisible(true);
+            //CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+            physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));
+            labelPause->setVisible(true);
 
-        this->pause();}
+            this->pause();
+        }
         if (!pausa) {
             //CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
             physicsPlayer->setVelocity(cocos2d::Vec2(200, 0));
@@ -268,7 +275,7 @@ void Level1::GANASTE() {
     auto director = Director::getInstance();
     auto tamano = director->getWinSize();
 
-    auto labelGanador = Label::createWithTTF("PASASTE TODOS LOS NIVELES", "fonts/Demoness.otf", 13);
+    auto labelGanador = Label::createWithTTF("PASASTE El NIVEL", "fonts/Demoness.otf", 13);
     if (labelGanador == nullptr)
     {
         problemLoading("'fonts/Demoness.otf'");
@@ -281,6 +288,7 @@ void Level1::GANASTE() {
         // add the label as a child to this layer
         this->addChild(labelGanador, 1);
         labelGanador->setVisible(true);
+        
     }
 
     auto labelSalir = Label::createWithTTF("Presioan  [ESC]  para salir", "fonts/arial.ttf", 7);
@@ -298,13 +306,16 @@ void Level1::GANASTE() {
         labelSalir->setVisible(true);
     }
 
+    /*physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));*/
+    this->pause();
+
     auto keyboardListener2 = EventListenerKeyboard::create();
     keyboardListener2->onKeyPressed = CC_CALLBACK_2(Level1::keyPressed, this);
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(keyboardListener2, labelSalir);
 }
 
 void Level1::movimientoCamara(float a) {
-    camara->setPosition(SpritePlayer->getPosition().x+200,160);
+    camara->setPosition(SpritePlayer->getPosition().x + 150, 160);
 }
 
 void Level1::saltar(float h) {
@@ -315,22 +326,18 @@ void Level1::saltar(float h) {
         if (i < 23) {
             SpritePlayer->setPosition(SpritePlayer->getPosition().x, SpritePlayer->getPosition().y + 3);
         }
-       else {
-       //     SpritePlayer->setPosition(SpritePlayer->getPosition().x, SpritePlayer->getPosition().y - 3);
-            fall = true;
-        }
-       
-
+       else fall = true;
     } 
     
     if (i >= 30) {
-        //SpritePlayer->setPosition(SpritePlayer->getPosition().x, tamano.height * 0.20);
         jump = false;//fall = true;
         i = 0;
     }
 }
 
 void Level1::colision(float noImporta) {
+    
+
     for (int i = 0; i < puas.size(); i++)
     {
         if (puas[i].intersectsCircle(SpritePlayer->getPosition(), 15))
@@ -352,6 +359,11 @@ void Level1::colision(float noImporta) {
                 entro = true;
             }
         }
+    }
+
+    if (meta.intersectsCircle(SpritePlayer->getPosition(), 15))
+    {
+        GANASTE();
     }
     //else {
     //   /* if (fall) {
@@ -375,7 +387,7 @@ void Level1::morir() {
     //CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
     //CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("C:/Users/hecto/source/repos/G/Resources/hit.mp3");
     //cooldown
-    scheduleOnce(CC_SCHEDULE_SELECTOR(Level1::respawn), 2.0f);
+    scheduleOnce(CC_SCHEDULE_SELECTOR(Level1::respawn), 0.0f);
 }
 
 void Level1::respawn(float g) {
@@ -408,4 +420,13 @@ void Level1::crearBloque(int x, int y)
     Bloque suelo = spriteSuelo->getBoundingBox();
     bloques.push_back(suelo);
     addChild(spriteSuelo);
+}
+
+void Level1::crearMeta(int x, int y)
+{
+    auto sprite = Sprite::create("Meta.png");
+    sprite->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
+    sprite->setPosition(x, y);
+    meta = sprite->getBoundingBox();
+    addChild(sprite);
 }
