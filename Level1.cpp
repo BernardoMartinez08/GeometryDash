@@ -48,13 +48,13 @@ auto tamano=cocos2d::Size(0.0,0.0);
 //Cajas de las puas
 //Rect puas,pua2,pua3;
 //Cajas de las plataformas
-Rect suelo,suelo2;
-
-
-
-PhysicsBody* physicsPlayer;
+//Rect suelo,
+//suelo2;
 vector<Pua> puas;
 vector<Bloque> bloques;
+
+PhysicsBody* physicsPlayer;
+
 
 Scene* Level1::createScene()
 {
@@ -85,7 +85,7 @@ bool Level1::init()
     camara = Camera::create();
     camara->setCameraFlag(CameraFlag::DEFAULT);
     camara->setAnchorPoint(Vec2::ANCHOR_BOTTOM_LEFT);
-    //camara->setContentSize(cocos2d::Size(800,500));
+    //camara->setContentSize(Director::getInstance()->getVisibleSize());
     this->addChild(camara);
     camara->setPosition(Vec2(0, 0));
 
@@ -113,6 +113,7 @@ bool Level1::init()
     auto director = Director::getInstance();
     tamano = director->getWinSize();
 
+    
     labelPause = Label::createWithTTF("GAME PAUSED", "fonts/Demoness.otf", 15);
     if (labelPause == nullptr)
     {
@@ -134,9 +135,7 @@ bool Level1::init()
 
     //Cuadro de movimiento 
     physicsPlayer = PhysicsBody::createBox(Size(65.0f, 81.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
-    physicsPlayer->setGravityEnable(false);
-    physicsPlayer->setVelocity(Vec2(200, 0));
-    physicsPlayer->setVelocityLimit(500.0f);
+ 
 
 
     //Crear SpritePlayer
@@ -170,36 +169,14 @@ bool Level1::init()
 void Level1::initObstaculos() {
     
  //Puas
-//puas
+
     crearPua(tamano.width + 700, (tamano.height * 0.20) - 20);
-    /*auto spritePuas = Sprite::create("pua.png");
-    spritePuas->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
-    spritePuas->setPosition(tamano.width+700,(tamano.height*0.20)-20);
-    spritePuas->setScale(0.5, 0.5);
-    puas = spritePuas->getBoundingBox();
-    addChild(spritePuas);*/
- //pua2
+
     crearPua(tamano.width + 850, (tamano.height * 0.20));
-    //auto SpritePua2 = Sprite::create("pua.png");
-    //SpritePua2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_RIGHT);
-    //SpritePua2->setPosition;
-    //SpritePua2->setScale(0.5, 0.5);
-    //pua2 = SpritePua2->getBoundingBox();
-    //addChild(SpritePua2);
-    //pua3
     
-    //Plataformas
-    //Suelo 1
     crearBloque(tamano.width + 700, (tamano.height * 0.2) - 20);
-    
-    //suelo2
+
     crearBloque(puas[1].getMaxX(), puas[1].getMinY());
- /*   auto spriteSuelo2=Sprite::create("C:/Repositorio/ProyectoGeometryDash/Resources/bloque.png");
-    spriteSuelo2->setAnchorPoint(cocos2d::Vec2::ANCHOR_BOTTOM_LEFT);
-    spriteSuelo2->setPosition(SpritePua2->getPosition());
-    spriteSuelo2->setScale(0.4, 0.4);
-    suelo2 = spriteSuelo2->getBoundingBox();
-    addChild(spriteSuelo2);*/
 
 }
 
@@ -327,14 +304,14 @@ void Level1::GANASTE() {
 }
 
 void Level1::movimientoCamara(float a) {
-    camara->setPosition(SpritePlayer->getPosition().x+150,160);
+    camara->setPosition(SpritePlayer->getPosition().x+200,160);
 }
 
 void Level1::saltar(float h) {
     if (jump) {
         fall = false;
         i++;
-        SpritePlayer->setRotation(SpritePlayer->getRotation() + 2);
+        SpritePlayer->setRotation(SpritePlayer->getRotation() + 3);
         if (i < 23) {
             SpritePlayer->setPosition(SpritePlayer->getPosition().x, SpritePlayer->getPosition().y + 3);
         }
@@ -346,7 +323,7 @@ void Level1::saltar(float h) {
 
     } 
     
-    if (i >= 45) {
+    if (i >= 30) {
         //SpritePlayer->setPosition(SpritePlayer->getPosition().x, tamano.height * 0.20);
         jump = false;//fall = true;
         i = 0;
@@ -354,10 +331,6 @@ void Level1::saltar(float h) {
 }
 
 void Level1::colision(float noImporta) {
-    //playerColision = SpritePlayer->getBoundingBox();
-   /* if (puas.intersectsCircle(SpritePlayer->getPosition(), 15 )||pua2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
-        morir();
-    }*/
     for (int i = 0; i < puas.size(); i++)
     {
         if (puas[i].intersectsCircle(SpritePlayer->getPosition(), 15))
@@ -380,31 +353,9 @@ void Level1::colision(float noImporta) {
             }
         }
     }
-    //if (suelo.intersectsCircle(SpritePlayer->getPosition(),15)) {
-    //    if (!jump) {
-    //        SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo.getMaxY() + 15);
-    //        //jump = false;
-    //        fall = true;
-    //    }
-    //
-    //}
-    //if (suelo2.intersectsCircle(SpritePlayer->getPosition(), 15)) {
-    //    if (!jump) {
-    //        SpritePlayer->setPosition(SpritePlayer->getPosition().x, suelo2.getMaxY() + 15);
-    //        fall = true;
-    //    }
-
-    //}
-    //if (entro) {
+    //else {
     //   /* if (fall) {
     //       // SpritePlayer->setPosition(SpritePlayer->getPosition().x,SpritePlayer->getPosition().y-1.5);
-
-    //        if (SpritePlayer->getPosition().y <= tamano.height * 0.20) {
-    //            SpritePlayer->setPosition(SpritePlayer->getPosition().x, tamano.height * 0.2);
-    //            fall = false;
-    //        }
-    ////    }*/
-    //}
 }
 
 void Level1::gravedad(float h) {
