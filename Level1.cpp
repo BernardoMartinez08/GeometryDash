@@ -275,6 +275,10 @@ void Level1::GANASTE() {
     auto director = Director::getInstance();
     auto tamano = director->getWinSize();
 
+    physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));
+    SpritePlayer->setVisible(false);
+    this->pause();
+
     auto labelGanador = Label::createWithTTF("PASASTE El NIVEL", "fonts/Demoness.otf", 13);
     if (labelGanador == nullptr)
     {
@@ -307,7 +311,7 @@ void Level1::GANASTE() {
     }
 
     /*physicsPlayer->setVelocity(cocos2d::Vec2(0, 0));*/
-    this->pause();
+    
 
     auto keyboardListener2 = EventListenerKeyboard::create();
     keyboardListener2->onKeyPressed = CC_CALLBACK_2(Level1::keyPressed, this);
