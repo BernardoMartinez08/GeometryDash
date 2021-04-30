@@ -286,7 +286,7 @@ void Level1::GANASTE() {
     }
     else
     {
-        // position the label on the center of the screen
+       
         labelGanador->setPosition(tamano.width / 2, tamano.height * 0.50);
 
         // add the label as a child to this layer
